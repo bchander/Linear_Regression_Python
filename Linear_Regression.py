@@ -1,19 +1,19 @@
-#Libraries
+'''......Importing Libraries......'''
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as mplt
 from sklearn import datasets, linear_model
+from sklearn.model_selection import train_test_split
 
-# Taking Dataset using Pandas
+'''.....Importing data as pandas dataframe......'''
 input_data = pd.read_csv('data.txt', header = None);
-# the data doesn't have any headerm, if the data has header say 'x, 'y', 
-# then use input_data[['x']]
-# if u us semicolon and hot enter, thenthe cursor will go the next line inline with the semicolon
 
+'''.....Splitting data into Inputs/Target.......'''
 x_value = input_data[[0]]
 y_value = input_data[[1]]
 m = len(x_value)
-# visualize the plot as scatter
+
+'''.....Visualize the input data.......'''
 f = mplt.figure(1)
 mplt.rcParams['figure.dpi'] = 600
 mplt.scatter(x_value, y_value, color = 'red')
@@ -21,13 +21,17 @@ mplt.title("Input Data")
 mplt.xlabel('X data')
 mplt.ylabel('Y data')
 f.show()
-# selecting half the data as train
-x_train = x_value[:round(m/2)]
-y_train = y_value[:round(m/2)]
 
+'''.....Creating Train/Test data.......'''
+x_train, x_test, y_train, y_test = train_test_split(x_value,
+                                                    y_value, 
+                                                    shuffle=True,
+                                                    test_size=0.3)
+#x_train = x_value[:round(m/2)]
+#y_train = y_value[:round(m/2)]
 # selecting rest half as test data
-x_test = x_value[round(m/2):]
-y_test = y_value[round(m/2):]
+#x_test = x_value[round(m/2):]
+#y_test = y_value[round(m/2):]
 
 # setting regression object
 reg = linear_model.LinearRegression()
