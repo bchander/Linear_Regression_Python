@@ -15,7 +15,7 @@ m = len(x_value)
 
 '''.....Visualize the input data.......'''
 f = mplt.figure(1)
-mplt.rcParams['figure.dpi'] = 600
+mplt.rcParams['figure.dpi'] = 300
 mplt.scatter(x_value, y_value, color = 'red')
 mplt.title("Input Data")
 mplt.xlabel('X data')
@@ -33,19 +33,32 @@ x_train, x_test, y_train, y_test = train_test_split(x_value,
 #x_test = x_value[round(m/2):]
 #y_test = y_value[round(m/2):]
 
+'''..................................
+..........Linear Regression..........
+.....................................'''
+
 # setting regression object
-reg = linear_model.LinearRegression()
-reg.fit(x_train, y_train)
-y_predict = reg.predict(x_test)
-#Root Mean sqare error scores
+model = linear_model.LinearRegression()
+
+#Training the model using train data (x_trin, y_train)
+model.fit(x_train, y_train)
+
+# Making predictions on unseen data (x_test)
+y_predict = model.predict(x_test)
+
+
+# checking the error (difference) predicted values and respective actual values
 error = y_predict - y_test
+
+#Measuring model performance using RMSE (Root Mean Square Errors)
 RMSE = np.sqrt(np.mean(np.square(y_predict - y_test)))
-variance = reg.score(x_test, y_test)
+variance = model.score(x_test, y_test)
 # find necessary coefficents - correlation coeff, RMSE, Variance
-print("\n Coefficinets  = \n", reg.coef_)
+print("\n Coefficinets  = \n", model.coef_)
 print("RMSE: %0.2f" % RMSE)
 print("Variance: %0.2f" % variance)
 
+# Plotting the regression line/curve
 g = mplt.figure(2)
 
 mplt.rcParams['font.size'] = '12'
@@ -60,15 +73,48 @@ mplt.xlabel('X')
 mplt.ylabel('Y')
 g.show()
 
-# raw input allows the prog to wait until enter is hit 
 
-#mplt.scatter(x_value, y_value)
+'''...............................................
+...............Polynomial Regression..............
+..................................................'''
+
+from sklearn.preprocessing import PolynomialFeatures
+
+# Creating polynomial features
+poly = PolynomialFeatures(degree=2, include_bias=False)
+poly_features = poly.fit_transform(x_value)
+
+x_train, x_test, y_train, y_test = train_test_split(poly_features,
+                                                    y_value, 
+                                                    shuffle=True,
+                                                    test_size=0.3)
+# Defining model based on the polynomial features
+model = linear_model.LinearRegression()
+model.fit(x_train, y_train)
+y_pred = model.predict(x_test)
+
+# checking the error (difference) predicted values and respective actual values
+error_poly = y_pred - y_test
+
+#Measuring model performance using RMSE (Root Mean Square Errors)
+RMSE_poly = np.sqrt(np.mean(np.square(y_pred - y_test)))
+#ariance_poly = model.score(x_test, y_test)
+# find necessary coefficents - correlation coeff, RMSE, Variance
+print("\n Coefficinets  = \n", model.coef_)
+print("RMSE: %0.2f" % RMSE)
+#print("Variance: %0.2f" % variance)
 
 
-'''
-SOME IMPORTANT NOTES 
+poly_data = pd.DataFrame(zip(x_test[:, 0], y_pred[:,0]), columns=['x', 'y'])
+sorted_data = poly_data.sort_values(by = 'x')
 
-fit takes argumemts : fit(X (training data),y_predict(target data), sampe_weight = None)
-score(X, y_predict, sample_weight = None)
-
-'''
+# Plotting the regression line/curve
+g = mplt.figure(2)
+mplt.rcParams['font.size'] = '12'
+mplt.rcParams['figure.dpi'] = 600
+mplt.scatter(x_test[:, 0],  y_test, color = 'black')
+mplt.plot(sorted_data['x'],  sorted_data['y'], color = 'blue', linewidth = 2, label = 'Poly Regression')
+mplt.title("Polynomial Regression degree 3")
+mplt.xlabel('X')
+mplt.ylabel('Y')
+g.show()
